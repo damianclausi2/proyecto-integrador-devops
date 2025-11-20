@@ -29,6 +29,17 @@ Este proyecto implementa una **pipeline completa de CI/CD** que cumple con los s
 4.  **Build y push** de imágenes Docker a Docker Hub
 5.  **Despliegue automático** a entorno de prueba (Render)
 
+**Flujo de CI/CD**
+El pipeline automatiza la entrega del software conectando GitHub Actions con Render mediante un flujo optimizado en dos etapas principales:
+Integración Continua (CI) - Ejecución Paralela: Al realizar un push a la rama principal, se disparan simultáneamente los trabajos de testing:
+Backend: Se levanta un contenedor de base de datos efímero (postgres:15) exclusivo para la ejecución de tests de integración, garantizando un entorno aislado y limpio que se destruye al finalizar.
+Frontend: En paralelo, se ejecutan los tests unitarios (Vitest) y de construcción (build).
+Únicamente si ambos procesos verifican correctamente, se construyen y suben las imágenes Docker de ambos servicios (Frontend y Backend) al registro de Docker Hub.
+Despliegue Continuo (CD): Tras la publicación exitosa de las imágenes, GitHub Actions dispara un Webhook hacia Render. Esto inicia la actualización automática del entorno de producción:
+Los servicios se redespliegan utilizando las nuevas imágenes/versiones validadas.
+La aplicación se conecta a la base de datos PostgreSQL persistente en la nube, diferenciándose de la instancia desechable utilizada durante la etapa de pruebas.
+
+
 **Despliegue en producción:**
 - **Frontend:** https://cooperativa-ugarte-frontend.onrender.com
 - **Backend API:** https://cooperativa-ugarte-backend.onrender.com
